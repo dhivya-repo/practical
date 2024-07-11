@@ -1,0 +1,99 @@
+1.	Importing libraries
+import tensorflow
+from keras.applications.resnet50 import ResNet50,preprocess_input
+from keras.layers import GlobalMaxPooling2D
+
+2.	Initialization Phase
+model=ResNet50(weights='imagenet',include_top=False,input_shape=(224,224,3))
+model.trainable=False
+model.summary()
+model=tensorflow.keras.Sequential([
+    model,
+    GlobalMaxPooling2D() ])
+model.summary()
+import cv2
+import numpy as np
+from numpy.linalg import norm
+
+3.	Feature Extraction Phase
+path ='images/1550.jpg'
+img = cv2.imread(path)
+img=cv2.resize(img,(224,224))
+img =np.array(img)
+img.shape
+expand_img=np.expand_dims(img,axis=0)
+expand_img.shape
+pre_image=preprocess_input(expand_img)
+pre_image.shape
+result=model.predict(pre_image).flatten()
+result
+result.shape
+result=result/norm(result)
+result
+def extract_feature(img_path,model):
+    img = cv2.imread(img_path)
+    img=cv2.resize(img,(224,224))
+    img =np.array(img)
+    expand_img=np.expand_dims(img,axis=0)
+    pre_image=preprocess_input(expand_img)
+    result=model.predict(pre_image).flatten()
+    normalized=result/norm(result)
+    return normalized
+
+4.	Algorithm Implementation Phase
+extract_feature('images/1550.jpg',model)
+
+5.	Testing Phase
+import os
+path='images'
+filename=[]
+feature_list=[]
+for file in os.listdir(path):
+    filename.append(os.path.join(path,file))
+for file in filename:
+    feature_list.append(extract_feature(file,model))
+import pickle
+pickle.dump(feature_list,open('featurevector.pkl','wb'))
+pickle.dump(filename,open('filenamess.pkl','wb'))
+class Solution:
+    def getWinner(self, arr, k: int) -> int:
+        count=0
+        current=0
+        while count<k:
+            if arr[0]>arr[1]:
+                current=arr[0]
+                ele=arr.pop(1)
+                arr.append(ele)
+                if current==arr[0]:
+                    count+=1
+            else:
+                current=arr[1]
+                ele=arr.pop(0)
+                arr.append(ele)
+                if current==arr[1]:
+                    count+=1
+        return arr[0]
+arr=[3,2,1]
+k = 10
+obj=Solution()
+obj.getWinner(arr,k)
+class Solution:
+    def isPathCrossing(self, path: str) -> bool:
+        origin=[0,0]
+        for i in path:
+            if i=='N':
+                origin[0]+=1
+            elif i=='S':
+                origin[0]-=1
+            elif i=='E':
+                origin[1]+=1
+            elif i=='W':
+                origin[1]-=1
+            if origin==[0,0]:
+                return True
+        else:
+            return False
+path = "NESWW"
+obj=Solution()
+obj.isPathCrossing(path)
+
